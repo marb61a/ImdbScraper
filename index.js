@@ -32,15 +32,37 @@ async function scrapingTitlesRankingsAndRatings(){
         })
         .get();
 
-    console.log(movies);
+    return movies;
 }
 
 async function scrapePosterUrl(movies){
     const moviePosterUrls = await Promise.all(
         movies.map(async movie => {
+            // Using try catch as there are a lot of requests and there might be
+            // errors in some 
+            try {
+                const html = await request.get(movie.descriptionUrl);
+                const $ = await cheerio.load(html);
 
+                movie.posterUrl = $('div.posterUrl > a').attr('href');
+                return movie;
+            } catch(err){
+                console.error(err);
+            }
         })
     );
+
+    return moviePosterUrls
 }
 
-scrapingTitlesRankingsAndRatings();
+async function main() {
+    // Will cause an error if there is no await
+    let movies = await scrapingTitlesRankingsAndRatings();
+
+    // This will return the movies array
+    movies = await scrapePosterUrl(movies);
+    console.log(movies);
+}
+
+// Calls the main function
+main();
