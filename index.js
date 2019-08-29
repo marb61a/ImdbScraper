@@ -1,12 +1,21 @@
 const request = require('request-promise');
 const cheerio = require('cheerio');
 
+// Nightmare js  is used as imdb uses JavaScript to render images
+// if you disable JS in the browser on image pages there is just a 
+// black page, this may cause scraping issues too
+const Nightmare = require('nightmare');
+const nightmare = Nightmare({
+    show: true
+});
+
 const sampleResult = {
     title: 'Bohemian Rhapsody',
     rank: 1,
     imdbRating: 8.0,
     descriptionUrl: 'https://www.imdb.com/title/tt1727824/?ref_=nv_sr_1?ref_=nv_sr_1',
-    moviePosterUrl: 'https://www.imdb.com/title/tt1727824/mediaviewer/rm2666152448'
+    moviePosterUrl: 'https://www.imdb.com/title/tt1727824/mediaviewer/rm2666152448',
+    posterImageUrl: 'https://m.media-amazon.com/images/M/MV5BMTA2NDc3Njg5NDVeQTJeQWpwZ15BbWU4MDc1NDcxNTUz._V1_SY1000_CR0,0,674,1000_AL_.jpg'
 };
 
 // Function for scraping movie titles, rankings and ratings
@@ -18,7 +27,7 @@ async function scrapingTitlesRankingsAndRatings(){
     const $ = await cheerio.load(result);
 
     // Using the parent element tr as you would not be able to get the rating
-    // from inside the td title elementelement).find(
+    // from inside the td title element
     const movies = $('tr')
         .map((i, element) => {
             const title = $(element).find('td.titleColumn > a').text();
@@ -44,7 +53,7 @@ async function scrapePosterUrl(movies){
                 const html = await request.get(movie.descriptionUrl);
                 const $ = await cheerio.load(html);
 
-                movie.posterUrl = $('div.posterUrl > a').attr('href');
+                movie.posterUrl = 'https://www.imdb.com/' + $('div.posterUrl > a').attr('href');
                 return movie;
             } catch(err){
                 console.error(err);
@@ -53,6 +62,19 @@ async function scrapePosterUrl(movies){
     );
 
     return moviePosterUrls
+}
+
+async function scrapePosterImageUrl(movies){
+    for(var i = 0; i < movies.length; i++){
+        try{
+            const posterImageUrl = await nightmare.goto(movies[i].posterUrl)
+            .evaluate(() => $(
+                
+            ))
+        } catch(err){
+            console.error(err);
+        }
+    }
 }
 
 async function main() {
