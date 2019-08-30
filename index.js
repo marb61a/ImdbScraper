@@ -1,5 +1,7 @@
 const request = require('request-promise');
+const regularRequest = require('request');
 const cheerio = require('cheerio');
+const fs = require('fs');
 
 // Nightmare js  is used as imdb uses JavaScript to render images
 // if you disable JS in the browser on image pages there is just a 
@@ -71,11 +73,24 @@ async function scrapePosterImageUrl(movies){
             .evaluate(() => $(
                 '#photo-container > div > div:nth-child(2) > div > div.pswp__scroll-wrap > div.pswp__container > div:nth-child(2) > div > img:nth-child(2)'
             )
-            .attr('src'))
+            .attr('src'));
+
+            movies[i].posterImageUrl = posterImageUrl;
+            savePosterImageToDrive(movies[i]);
+
+            console.log(movies[i]);
         } catch(err){
             console.error(err);
         }
     }
+}
+
+// Function which saves scraped images to a folder on the hdd
+// fs needs to be imported to give access to the file system
+async function savePosterImageToDrive(movies) {
+    regularRequest
+        .get(movie.posterImageUrl)
+        .pipe(fs.createWriteStream(`posters/${movie.rank}.png`));
 }
 
 async function main() {
