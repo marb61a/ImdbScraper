@@ -69,8 +69,9 @@ async function scrapePosterImageUrl(movies){
         try{
             const posterImageUrl = await nightmare.goto(movies[i].posterUrl)
             .evaluate(() => $(
-                
-            ))
+                '#photo-container > div > div:nth-child(2) > div > div.pswp__scroll-wrap > div.pswp__container > div:nth-child(2) > div > img:nth-child(2)'
+            )
+            .attr('src'))
         } catch(err){
             console.error(err);
         }
@@ -83,6 +84,7 @@ async function main() {
 
     // This will return the movies array
     movies = await scrapePosterUrl(movies);
+    movies = await scrapePosterImageUrl(movies);
     console.log(movies);
 }
 

@@ -1,5 +1,5 @@
 {
-  "name": "imdbScraper",
+  "name": "imdbscraper",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/marb61a/ImdbScraper#readme",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
+    "nightmare": "^3.0.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
   }
